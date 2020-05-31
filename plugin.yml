@@ -1,0 +1,9 @@
+name: LittleMinecraftVanillaExtension
+main: ml.codenoodles.lmve.Main
+api-version: 1.15
+author: netbenix
+version: Beta-1.1.0
+commands:
+    lmve:
+      usage: /<command>
+      description: LMVE Main Command

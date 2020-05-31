@@ -1,0 +1,98 @@
+######################################
+# Little Minecraft Vanilla Extension #
+######################################
+
+##########
+# VALUES #
+##########
+#Name of the Server
+server-name: "Minecraft Server"
+
+
+############
+# GAMEPLAY #
+############
+#Hardcore
+#Hardcore Mode in this plugins comes with double damage for players from everything
+Hardcore:
+  enabled: false
+  
+#SleepVoteSystem
+#min-perc = minimum of all players that have to be in bed
+Sleep:
+  min-perc: 20
+  
+#NetherPortal Stuff
+NetherPortal:
+    prevent-portals-above-nehter-ceiling: true
+ 
+#Enraged Mobs
+#Have Buffs but transform on Hit, with specific chance
+#chance range 1-100
+EnragedMobs:
+    enabled: true
+    chance: 2
+    
+#Prevent Mob Griefing
+#prevents that certain mobs cant destroy blocks by explosion etc.
+PreventMobGriefing:
+    creeper: true
+    wither: true
+
+#Drop Player Heads
+#If a player died, there is a specific chance to get that players head
+#Chance range 1-100
+PlayerHeads:
+    enabled: true
+    chance: 5
+
+############
+# MESSAGES #
+############
+#All Options for the Join and Quit messages
+JoinMessage:
+  enabled: true
+QuitMessage:
+  enabled: true
+
+
+###########
+# RECIPES #
+###########
+#Removes Minecraft Vanilla Recipes
+RemoveVanillaRecipes:
+  magma-block: true
+
+#Enable/Disable the Recipes that are Added by the Plugin
+#ice01 = with snowballs | ice02 = with snowblocks
+LMVE-Recipes:
+  Crafting:
+    magma-block: true
+    mycelium: true
+    cobweb: true
+    ice01: true
+    ice02: true
+    strings: true
+    elytra: true
+    black-dye: true
+  Stonecutter:
+    wood-stairs: true
+    wood-slabs: true
+  Campfire:
+    cooked-cod: true
+    cooked-salmon: true
+  
+  
+##########
+# SOUNDS #
+##########
+#Default all enabled
+Sounds:
+  chat: true
+  
+  
+########
+# CHAT #
+########
+Chat:
+  global-mute: false
