@@ -4,13 +4,51 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 
 import ml.codenoodles.lmve.other.ConsoleColor;
 
 public class SQLHandler {
 
-	
 	public SQLHandler() {
+	}
+	
+	public void updateKillCounter(int table, String entity, UUID uuid, String dbPath) {
+		Connection conn = null;
+		String tableName = null;
+		
+		switch(table){
+			case 0:{
+				tableName = "tblPlayerStats";
+				break;
+			}
+			case 1:{
+				tableName = "tblPlayerFKills";
+				break;
+			}
+			case 2:{
+				tableName = "tblPlayerNKills";
+				break;
+			}
+			case 3:{
+				tableName = "tblPlayerHKills";
+				break;
+			}
+			default:{
+				tableName = "NULL";
+				break;
+			}
+		}
+		
+		String path = "jdbc:sqlite:" + dbPath + "/" + "Players.db";
+		String query = "UPDATE " + tableName + " SET " + entity + " = ( " + entity + " + 1) WHERE UUID ='" + uuid.toString() + "';";
+		try { //Try connection and exec query
+			conn = DriverManager.getConnection(path);
+			Statement stmt = conn.createStatement();
+			stmt.execute(query);
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
 	}
 	
 	

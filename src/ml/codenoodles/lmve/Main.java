@@ -43,7 +43,7 @@ implements Listener
 {
 	FileConfiguration cfg = this.getConfig();
     NamespacedKey Nkey = new NamespacedKey(this, this.getDescription().getName());
-    SQLHandler sql = new SQLHandler();
+    public SQLHandler sql = new SQLHandler();
 	public void onEnable() {
 		this.saveDefaultConfig();
 		registerEvents();

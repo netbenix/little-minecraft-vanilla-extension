@@ -2,11 +2,6 @@ package ml.codenoodles.lmve.modules;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -25,7 +20,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -40,6 +34,168 @@ public class PlayerStatistics implements Listener{
 		this.main = main;
 	}
 	
+	
+	@EventHandler
+	private void createDefaultEntrys(PlayerJoinEvent e) {
+		Connection conn = null;
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");  
+		LocalDateTime timeNow = LocalDateTime.now();
+		Player p = (Player) e.getPlayer();
+		String playerName = p.getName();
+		Boolean existsPlayerStats = false;
+		Boolean existsPlayerHKills = false;
+		Boolean existsPlayerNKills = false;
+		Boolean existsPlayerFKills = false;
+		UUID uuid = e.getPlayer().getUniqueId();
+		String path = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
+		try { //Try connection
+			conn = DriverManager.getConnection(path);
+		} catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		int totalPlayers = 0;
+		try { //Get Total Players
+			Statement stmt = conn.createStatement();
+			ResultSet res = stmt.executeQuery("SELECT COUNT(*) AS rowcount FROM tblPlayerStats;");
+			
+			res.next();
+			totalPlayers = res.getInt("rowcount");
+			res.close();
+		}catch(SQLException sqlEx) {
+			System.out.println("[LMVE]" + sqlEx.getMessage());
+			return;
+		}
+		
+		try { //Check if entry in tblPlayerStats already exists
+			String query = "SELECT (COUNT(*) > 0) FROM tblPlayerStats WHERE UUID = '" + uuid.toString() + "'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			rs.next();
+			existsPlayerStats = rs.getBoolean(1);
+			rs.close();
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		try { //Check if entry in tblPlayerHKills already exists
+			String query = "SELECT (COUNT(*) > 0) FROM tblPlayerHKills WHERE UUID = '" + uuid.toString() + "'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			rs.next();
+			existsPlayerHKills = rs.getBoolean(1);
+			rs.close();
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		try { //Check if entry in tblPlayerNKills already exists
+			String query = "SELECT (COUNT(*) > 0) FROM tblPlayerNKills WHERE UUID = '" + uuid.toString() + "'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			rs.next();
+			existsPlayerNKills = rs.getBoolean(1);
+			rs.close();
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		try { //Check if entry in tblPlayerFKills already exists
+			String query = "SELECT (COUNT(*) > 0) FROM tblPlayerFKills WHERE UUID = '" + uuid.toString() + "'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			rs.next();
+			existsPlayerFKills = rs.getBoolean(1);
+			rs.close();
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		
+		if(!existsPlayerStats) {
+			try { //Create default entry for tblPlayerStats
+				String query = "INSERT INTO tblPlayerStats VALUES ("
+						+ (totalPlayers + 1) + ","
+						+ "'" + uuid.toString() + "'," //UUID
+						+ "'" + playerName + "'," //Displayname
+						+ p.getHealth() + "," //Health
+						+ "'" + p.getWorld().getName() + "'," //Worldname
+						+ "'" + dtf.format(timeNow) + "'," //FirstJoin
+						+ "'null'," //LastJoin
+						+ 0 + "," //Deaths
+						+ 0 + ");"; //DamageTaken
+				Statement stmt = conn.createStatement();
+				stmt.execute(query);
+			}catch(SQLException sqlEx) {
+				System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+			}
+		}
+		
+		if(!existsPlayerHKills) {
+			try { //Create default entry for tblPlayerHKills
+				String query = "INSERT INTO tblPlayerHKills VALUES ("
+						+ (totalPlayers + 1) + ","
+						+ "'" + uuid.toString() + "',";
+				for(int i = 0; i < 24; i++) {
+					if(i == 23) {
+						query += "0);";
+					} else {
+						query += "0,";
+					}
+				}
+				Statement stmt = conn.createStatement();
+				stmt.execute(query);
+			}catch(SQLException sqlEx) {
+				System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+			}
+		}
+		
+		if(!existsPlayerNKills) {
+			try{ //Create default entry for tblPlayerNKills
+				String query = "INSERT INTO tblPlayerNKills VALUES ("
+						+ (totalPlayers + 1) + ","
+						+ "'" + uuid.toString() + "',";
+				for(int i = 0; i < 11; i++) {
+					if(i == 10) {
+						query += "0);";
+					} else {
+						query += "0,";
+					}
+				}
+				Statement stmt = conn.createStatement();
+				stmt.execute(query);
+			}catch(SQLException sqlEx) {
+				System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+			}
+		}
+		
+		if(!existsPlayerFKills) {
+			try { //Create default entry for tblPlayerFKills
+				String query = "INSERT InTO tblPlayerFKills VALUES ("
+						+ (totalPlayers + 1) + ","
+						+ "'" + uuid.toString() + "',";
+				for(int i = 0; i < 23; i++) {
+					if(i == 22) {
+						query += "0);";
+					} else {
+						query += "0,";
+					}
+				}
+				Statement stmt = conn.createStatement();
+				stmt.execute(query);
+			} catch(SQLException sqlEx) {
+				System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+			}
+		}
+		
+		
+		try { // Close connection
+			conn.close();
+		} catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+	}
+	
 	@EventHandler
 	private void UpdateLastJoined(PlayerJoinEvent e) {
 		UUID player_uuid = e.getPlayer().getUniqueId();
@@ -47,6 +203,9 @@ public class PlayerStatistics implements Listener{
 		LocalDateTime now = LocalDateTime.now();
 		File playerStats = new File(main.getDataFolder() + "/Players", player_uuid + ".yml");
 		FileConfiguration player_stat = YamlConfiguration.loadConfiguration(playerStats);
+		Connection conn = null;
+		String dbPath = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
+		String query;
 		player_stat.set(player_uuid + ".LastJoined", dtf.format(now));
 		try {
 			player_stat.save(playerStats);
@@ -61,28 +220,24 @@ public class PlayerStatistics implements Listener{
 		Player p = (Player) e.getPlayer();
 		UUID uuid = p.getUniqueId();
 		
-		File playerStats = new File(main.getDataFolder() + "/Players", uuid + ".yml");
-		FileConfiguration player_stat = YamlConfiguration.loadConfiguration(playerStats);
-		player_stat.set(uuid + ".General.DisplayName", p.getName());
-		player_stat.set(uuid + ".General.Health", p.getHealth());
-		player_stat.set(uuid + ".General.World", p.getWorld().getName());
-		player_stat.set(uuid + ".General.Location.X", p.getLocation().getX());
-		player_stat.set(uuid + ".General.Location.Y", p.getLocation().getY());
-		player_stat.set(uuid + ".General.Location.Z", p.getLocation().getZ());
-		float pTime = p.getStatistic(Statistic.PLAY_ONE_MINUTE);
-		pTime = pTime / 20;
-		pTime = pTime / 60;
-		pTime = pTime / 60;
-		player_stat.set(uuid + ".TimePlayed", pTime);
+		Connection conn = null;
+		String dbPath = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
+		String query = "UPDATE tblPlayerStats SET "
+				+ "(DisplayName = " + p.getName() + "),"
+				+ "(Health = " + p.getHealth() + "),"
+				+ "(World = " + p.getWorld().getName() + "),";
 		try {
-			player_stat.save(playerStats);
-		} catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+			conn = DriverManager.getConnection(dbPath);
+			Statement stmt = conn.createStatement();
+			stmt.execute(query);
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
+		
 	}
 	
-	@EventHandler(priority = EventPriority.LOW)
+	//NEEDS UPDATE TO SQL
+	/*@EventHandler(priority = EventPriority.LOW)
 	private void checkName(PlayerJoinEvent e) throws IOException {
 		UUID uuid = e.getPlayer().getUniqueId();
 		File pStatFile = new File(main.getDataFolder() + "/Players", uuid + ".yml");
@@ -110,7 +265,7 @@ public class PlayerStatistics implements Listener{
 			content = content.replaceAll(("\\b" + oldName + "\\b"), newName);
 			Files.write(pListPath, content.getBytes(charset));
 		}
-	}
+	}*/
 	
 	
 	public void outputStats(CommandSender sender, UUID uuid) {

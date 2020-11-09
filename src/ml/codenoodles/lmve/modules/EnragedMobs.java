@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.PigZombie;
+import org.bukkit.entity.Piglin;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
@@ -114,8 +114,8 @@ public class EnragedMobs implements Listener{
 				}
 				return;
 			}
-			case PIG_ZOMBIE:{
-				PigZombie pigzombie = (PigZombie) e.getEntity();
+			case PIGLIN:{
+				Piglin pigzombie = (Piglin) e.getEntity();
 				boolean trigger = checkIfTrigger();
 				if(trigger) {
 					if(!checkCustomName(pigzombie.getCustomName())) {
@@ -125,7 +125,7 @@ public class EnragedMobs implements Listener{
 						pigzombie.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 9999, 1));
 						pigzombie.addPotionEffect(new PotionEffect(PotionEffectType.HARM, 60, 1));
 						pigzombie.setHealth(pigzombie.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-						pigzombie.setCustomName("Enraged Zombie Pigman");
+						pigzombie.setCustomName("Enraged Piglin");
 						pigzombie.setCustomNameVisible(true);
 					}
 				}

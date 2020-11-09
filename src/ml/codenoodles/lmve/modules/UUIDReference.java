@@ -29,7 +29,7 @@ public class UUIDReference implements Listener{
 		String playerName = p.getName();
 		String uuid = p.getUniqueId().toString();
 		
-		Connection conn;
+		Connection conn = null;
 		boolean entryExists = false;
 		String path = "jdbc:sqlite:" + dbPath + "/" + "Players.db";
 		try { //Try Connection
