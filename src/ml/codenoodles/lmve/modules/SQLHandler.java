@@ -47,6 +47,12 @@ public class SQLHandler {
 		}catch(SQLException sqlEx) {
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
+		
+		try { //Try connection close
+			conn.close();
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
 	}
 	
 	

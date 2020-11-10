@@ -49,6 +49,11 @@ public class StatCounter implements Listener{
 					System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 				}
 				
+				try {
+					conn.close();
+				}catch(SQLException sqlEx) {
+					System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+				}
 			}		
 		}
 	}

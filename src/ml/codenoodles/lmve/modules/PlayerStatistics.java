@@ -234,6 +234,12 @@ public class PlayerStatistics implements Listener{
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
 		
+		try {
+			conn.close();
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
 	}
 	
 	//NEEDS UPDATE TO SQL
@@ -392,6 +398,11 @@ public class PlayerStatistics implements Listener{
 				columnValueStatsH[i-1] = rs.getString(i + 2);
 				sender.sendMessage(ChatColor.YELLOW + columnNameStatsH[i-1] + ": " + ChatColor.AQUA + columnValueStatsH[i-1]);
 			}
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		try {
+			conn.close();
 		}catch(SQLException sqlEx) {
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
