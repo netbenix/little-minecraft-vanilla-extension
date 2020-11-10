@@ -39,11 +39,9 @@ public class SQLHandler {
 				break;
 			}
 		}
-		
-		String path = "jdbc:sqlite:" + dbPath + "/" + "Players.db";
 		String query = "UPDATE " + tableName + " SET " + entity + " = ( " + entity + " + 1) WHERE UUID ='" + uuid.toString() + "';";
 		try { //Try connection and exec query
-			conn = DriverManager.getConnection(path);
+			conn = DriverManager.getConnection(dbPath);
 			Statement stmt = conn.createStatement();
 			stmt.execute(query);
 		}catch(SQLException sqlEx) {
