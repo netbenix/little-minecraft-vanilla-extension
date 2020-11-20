@@ -3,11 +3,11 @@
 A litte fun project of mine to add some features and
 crafting recipes to Minecraft.
 
-Used API: *Spigot-1.15.2*
+Used API: *Spigot-1.16.4*
 
-Minecraft Version: *1.15.2* 
+Minecraft Version: *1.16.4* 
 
-Plugin Version: *Beta-1.1.0* 
+Plugin Version: *Beta-1.2.0* 
 
 #### Features:
 - Custom Crafting Recipes!
