@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import ml.codenoodles.lmve.Main;
 import ml.codenoodles.lmve.other.ConsoleColor;
 
 public class SQLHandler {
@@ -39,13 +42,17 @@ public class SQLHandler {
 				break;
 			}
 		}
-		
-		String path = "jdbc:sqlite:" + dbPath + "/" + "Players.db";
 		String query = "UPDATE " + tableName + " SET " + entity + " = ( " + entity + " + 1) WHERE UUID ='" + uuid.toString() + "';";
 		try { //Try connection and exec query
-			conn = DriverManager.getConnection(path);
+			conn = DriverManager.getConnection(dbPath);
 			Statement stmt = conn.createStatement();
 			stmt.execute(query);
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		try { //Try connection close
+			conn.close();
 		}catch(SQLException sqlEx) {
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
@@ -148,18 +155,60 @@ public class SQLHandler {
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
 		
+		try { //Create PlayerSettings
+			String query = "CREATE TABLE tblPlayerSettings("
+					+ "ID INTEGER PRIMARY KEY," + "UUID TEXT NOT NULL,"
+					+ "ChatNotify INTEGER NOT NULL);";
+			Statement stmt = conn.createStatement();
+			stmt.execute(query);
+			System.out.println(ConsoleColor.PURPLE + "[LMVE]Player Settings Table created!" + ConsoleColor.RESET);
+			successfullQuerys++;
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		try { //Create Database Info
+			
+			String query = "CREATE TABLE tblDatabaseInfo("
+					+ "ID INTEGER PRIMARY KEY,"
+					+ "CREATION_DATE TEXT NOT NULL,"
+					+ "VERSION INTEGER NOT NULL);";
+			Statement stmt = conn.createStatement();
+			stmt.execute(query);
+			System.out.println(ConsoleColor.PURPLE + "[LMVE]Database info table created!" + ConsoleColor.RESET);
+			successfullQuerys++;
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
+		try {
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDateTime today = LocalDateTime.now();
+			String query = "INSERT INTO tblDatabaseInfo VALUES ("
+					+ "1,"
+					+ "'" + dtf.format(today) + "',"
+					+ Main.DB_VER + ");";
+			Statement stmt = conn.createStatement();
+			stmt.execute(query);
+			System.out.println(ConsoleColor.PURPLE + "[LMVE]Database info entry inserted!" + ConsoleColor.RESET);
+			successfullQuerys++;
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
+		
 		try { //Close Connection
 			conn.close();
 		}catch(SQLException sqlEx) {
 			System.out.println("[LMVE]" + sqlEx.getMessage());
 		}
 		
-		if(successfullQuerys == 5) {
+		if(successfullQuerys == 8) {
 			System.out.println(ConsoleColor.GREEN + "[LMVE]Default Database successfully created!" + ConsoleColor.RESET);
 		} else {
 			System.out.println(ConsoleColor.RED + "[LMVE]Oops.. Something went wrong during the creation of the Default Database." + ConsoleColor.RESET);
 		}
 		
 	}
+	//TODO Add DB Update Queries
 	
 }

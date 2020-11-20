@@ -44,6 +44,7 @@ implements Listener
 	FileConfiguration cfg = this.getConfig();
     NamespacedKey Nkey = new NamespacedKey(this, this.getDescription().getName());
     public SQLHandler sql = new SQLHandler();
+    public static int DB_VER = 1;
 	public void onEnable() {
 		this.saveDefaultConfig();
 		registerEvents();
@@ -175,7 +176,7 @@ implements Listener
 					sender.sendMessage(ChatColor.GRAY + "================");
 					sender.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "LMVE LEADERBOARD INFO");
 					sender.sendMessage(ChatColor.YELLOW + "Usage : " + ChatColor.AQUA + "/lmve leaderboard <category>");
-					sender.sendMessage(ChatColor.YELLOW + "Categorys: ");
+					sender.sendMessage(ChatColor.YELLOW + "Categories: ");
 					sender.sendMessage(ChatColor.RED + "time-played");
 					sender.sendMessage(ChatColor.RED + "deaths");
 					sender.sendMessage(ChatColor.RED + "damage-taken");
@@ -195,7 +196,7 @@ implements Listener
 				return true;
 			}
 			
-
+			//SQL REWORK
 			if(args[0].equalsIgnoreCase("settings")) {
 				if(!(sender instanceof Player)) {
 					sender.sendMessage("Command is only for Players!");
@@ -233,7 +234,6 @@ implements Listener
 					try {
 						player_stat.save(PlayerStat);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

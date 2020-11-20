@@ -1,6 +1,5 @@
 package ml.codenoodles.lmve.modules;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,8 +9,6 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import ml.codenoodles.lmve.Main;
 import ml.codenoodles.lmve.other.ConsoleColor;
@@ -40,7 +37,7 @@ public class Leaderboard {
 		}
 		for(int i = 1; i <= totalPlayers; i++) {
 			try { //Get Players
-				String query = "SELECT Name AS playerName, UUID AS uuid FROM tblPlayers WHERE ID = ?";
+				String query = "SELECT Name AS playerName, UUID AS uuid FROM tblPlayerStats WHERE ID = ?";
 				PreparedStatement pst = conn.prepareStatement(query);
 				pst.setLong(1, i);
 				ResultSet rs = pst.executeQuery();
@@ -57,15 +54,6 @@ public class Leaderboard {
 		float value[] = new float[playerAmount];
 		sender.sendMessage(ChatColor.GRAY + "=====[ LEADERBOARD ]=====");
 		switch(args[1]){
-			case "time-played":{
-				sender.sendMessage(ChatColor.GRAY + "Category: " + ChatColor.AQUA + "Time Played" + ChatColor.GRAY + "(in hours)");
-				for(int i = 1; i < playerAmount; i++) {
-					File playerFile = new File(main.getDataFolder() + "/Players", uuid[i] + ".yml");
-					FileConfiguration playerStat = YamlConfiguration.loadConfiguration(playerFile);
-					value[i] = playerStat.getInt(uuid[i] + ".TimePlayed");
-				}
-				break;
-			}
 			case "deaths":{
 				sender.sendMessage(ChatColor.GRAY + "Category: " + ChatColor.AQUA + "Deaths");
 				for(int i = 1; i <= playerAmount; i++) {

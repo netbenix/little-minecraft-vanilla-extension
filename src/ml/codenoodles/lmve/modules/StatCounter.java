@@ -37,7 +37,6 @@ public class StatCounter implements Listener{
 			Player p = (Player) e.getEntity();
 			if(p.getGameMode() == GameMode.SURVIVAL || p.getGameMode() == GameMode.ADVENTURE) {
 				UUID uuid = p.getUniqueId();
-				
 				Connection conn = null;
 				String path = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
 				String query = "UPDATE tblPlayerStats SET DamageTaken = (DamageTaken + " + e.getDamage() + ") WHERE UUID = " + uuid.toString() + "';"; 
@@ -49,6 +48,11 @@ public class StatCounter implements Listener{
 					System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 				}
 				
+				try {
+					conn.close();
+				}catch(SQLException sqlEx) {
+					System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+				}
 			}		
 		}
 	}
@@ -65,7 +69,6 @@ public class StatCounter implements Listener{
 		try {
 			player_stat.save(playerStats);
 		} catch (IOException ex) {
-			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 	}
