@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import ml.codenoodles.lmve.Main;
 import ml.codenoodles.lmve.other.ConsoleColor;
 
+
 public class PlayerStatistics implements Listener{
 
 	private Main main;
@@ -41,6 +42,7 @@ public class PlayerStatistics implements Listener{
 		Boolean existsPlayerHKills = false;
 		Boolean existsPlayerNKills = false;
 		Boolean existsPlayerFKills = false;
+		Boolean existsPlayerSettings = false;
 		UUID uuid = e.getPlayer().getUniqueId();
 		String path = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
 		try { //Try connection
@@ -105,8 +107,29 @@ public class PlayerStatistics implements Listener{
 		}catch(SQLException sqlEx) {
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
+		try {//Check if entry in tblPlayerSettings already exists
+			String query = "SELECT (COUNT(*)  0) FROM tblPlayerSettings WHERE UUID = '" + uuid.toString() + "'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			rs.next();
+			existsPlayerSettings = rs.getBoolean(1);
+			rs.close();
+ 		}catch(SQLException sqlEx) {
+ 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+ 		}
 		
-		// TODO Add Entry for PlayerSettings
+		if(!existsPlayerSettings) {
+			try {// Create default entry for tblPlayerSettings
+				String query = "INSERT INTO tblPlayerSetings VALUES ("
+						+ (totalPlayers + 1) + ","
+						+ "'" + uuid.toString() + "',"
+						+ "true);";
+				Statement stmt = conn.createStatement();
+				stmt.execute(query);
+			}catch(SQLException sqlEx) {
+				System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+			}
+		}
 		if(!existsPlayerStats) {
 			try { //Create default entry for tblPlayerStats
 				String query = "INSERT INTO tblPlayerStats VALUES ("
