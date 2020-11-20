@@ -175,7 +175,7 @@ implements Listener
 					sender.sendMessage(ChatColor.GRAY + "================");
 					sender.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "LMVE LEADERBOARD INFO");
 					sender.sendMessage(ChatColor.YELLOW + "Usage : " + ChatColor.AQUA + "/lmve leaderboard <category>");
-					sender.sendMessage(ChatColor.YELLOW + "Categorys: ");
+					sender.sendMessage(ChatColor.YELLOW + "Categories: ");
 					sender.sendMessage(ChatColor.RED + "time-played");
 					sender.sendMessage(ChatColor.RED + "deaths");
 					sender.sendMessage(ChatColor.RED + "damage-taken");
