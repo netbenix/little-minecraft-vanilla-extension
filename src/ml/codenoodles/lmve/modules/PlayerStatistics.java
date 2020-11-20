@@ -1,7 +1,5 @@
 package ml.codenoodles.lmve.modules;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,10 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -111,7 +106,7 @@ public class PlayerStatistics implements Listener{
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
 		
-		
+		// TODO Add Entry for PlayerSettings
 		if(!existsPlayerStats) {
 			try { //Create default entry for tblPlayerStats
 				String query = "INSERT INTO tblPlayerStats VALUES ("
@@ -171,7 +166,7 @@ public class PlayerStatistics implements Listener{
 		
 		if(!existsPlayerFKills) {
 			try { //Create default entry for tblPlayerFKills
-				String query = "INSERT InTO tblPlayerFKills VALUES ("
+				String query = "INSERT INTO tblPlayerFKills VALUES ("
 						+ (totalPlayers + 1) + ","
 						+ "'" + uuid.toString() + "',";
 				for(int i = 0; i < 23; i++) {
@@ -201,18 +196,18 @@ public class PlayerStatistics implements Listener{
 		UUID player_uuid = e.getPlayer().getUniqueId();
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");  
 		LocalDateTime now = LocalDateTime.now();
-		File playerStats = new File(main.getDataFolder() + "/Players", player_uuid + ".yml");
-		FileConfiguration player_stat = YamlConfiguration.loadConfiguration(playerStats);
 		Connection conn = null;
 		String dbPath = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
-		String query;
-		player_stat.set(player_uuid + ".LastJoined", dtf.format(now));
+		String query = "UPDATE tblPlayerStats SET LastJoined = '" + dtf.format(now) + "' WHERE UUID ='" + player_uuid.toString() + "';";
+		
 		try {
-			player_stat.save(playerStats);
-		} catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}	
+			conn = DriverManager.getConnection(dbPath);
+			Statement stmt = conn.createStatement();
+			stmt.execute(query);
+			conn.close();
+		}catch(SQLException sqlEx) {
+			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
+		}
 	}
 	
 	@EventHandler
@@ -223,57 +218,20 @@ public class PlayerStatistics implements Listener{
 		Connection conn = null;
 		String dbPath = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
 		String query = "UPDATE tblPlayerStats SET "
-				+ "(DisplayName = " + p.getName() + "),"
-				+ "(Health = " + p.getHealth() + "),"
-				+ "(World = " + p.getWorld().getName() + "),";
+				+ "Displayname = '" + p.getName() + "',"
+				+ "Health = '" + p.getHealth() + "',"
+				+ "World = '" + p.getWorld().getName() + "' WHERE UUID = '" + uuid.toString() + "';";
 		try {
 			conn = DriverManager.getConnection(dbPath);
 			Statement stmt = conn.createStatement();
 			stmt.execute(query);
-		}catch(SQLException sqlEx) {
-			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
-		}
-		
-		try {
 			conn.close();
 		}catch(SQLException sqlEx) {
 			System.out.println(ConsoleColor.RED + "[LMVE]" + sqlEx.getMessage() + ConsoleColor.RESET);
 		}
 		
 	}
-	
-	//NEEDS UPDATE TO SQL
-	/*@EventHandler(priority = EventPriority.LOW)
-	private void checkName(PlayerJoinEvent e) throws IOException {
-		UUID uuid = e.getPlayer().getUniqueId();
-		File pStatFile = new File(main.getDataFolder() + "/Players", uuid + ".yml");
-		FileConfiguration pStat = YamlConfiguration.loadConfiguration(pStatFile);
-		if(pStat.getString(uuid + ".DisplayName") != e.getPlayer().getName()) {
-			String oldName = pStat.getString(uuid + ".DisplayName");
-			String newName = e.getPlayer().getName();
-			pStat.set(uuid + ".DisplayName", newName);
-			
-			File uRefFile = new File(main.getDataFolder(), "uuid_reference.yml");
-			FileConfiguration uRef = YamlConfiguration.loadConfiguration(uRefFile);
-			uRef.set(oldName, null);
-			uRef.set(newName, uuid.toString());	
-			try {
-				pStat.save(pStatFile);
-				uRef.save(uRefFile);
-			} catch (IOException ex) {
-				// TODO Auto-generated catch block
-				ex.printStackTrace();
-			}
-			
-			Path pListPath = Paths.get(main.getDataFolder()  + "/playerList.txt");
-			Charset charset = StandardCharsets.UTF_8;
-			String content = new String(Files.readAllBytes(pListPath), charset);
-			content = content.replaceAll(("\\b" + oldName + "\\b"), newName);
-			Files.write(pListPath, content.getBytes(charset));
-		}
-	}*/
-	
-	
+		
 	public void outputStats(CommandSender sender, UUID uuid) {
 		
 		Connection conn;

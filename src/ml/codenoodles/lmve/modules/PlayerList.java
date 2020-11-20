@@ -20,7 +20,7 @@ public class PlayerList implements Listener{
 	public int getAmount() {
 		int totalPlayers;
 		Connection conn;
-		String path = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "\\" + "Players.db";
+		String path = "jdbc:sqlite:" + main.getDataFolder().getAbsolutePath() + "/" + "Players.db";
 		try { //Try Connection
 			conn = DriverManager.getConnection(path);
 		}catch(SQLException sqlEx) {
