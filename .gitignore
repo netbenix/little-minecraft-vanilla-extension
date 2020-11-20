@@ -1,3 +1,6 @@
 bin/
 .idea/
 little-minecraft-vanilla-extension.iml
+.vscode/
+.classpath
+.project
